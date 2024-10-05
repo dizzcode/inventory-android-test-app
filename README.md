@@ -10,23 +10,18 @@ and [Navigation](https://developer.android.com/topic/libraries/architecture/navi
 
 <br>
 
-
-
 <div align="center">
 
-ᴄᴏɴᴛᴇɴᴛꜱ :  
+⁃ ᴄᴏɴᴛᴇɴᴛꜱ ⁃  
 [ᴜꜱᴇʀ ꜰᴇᴀᴛᴜʀᴇꜱ](#ɪɪ--ᴡʜᴀᴛ-ᴜꜱᴇʀꜱ-ᴄᴀɴ-ᴇxᴘᴇᴄᴛ)
 | [ᴀᴘᴘ ꜱᴄʀᴇᴇɴꜱ](#ɪɪɪ--ᴠɪꜱᴜᴀʟ-ᴛᴏᴜʀ-ᴏꜰ-ᴛʜᴇ-ᴀᴘᴘ-ꜱᴄʀᴇᴇɴꜱ)
 | [ᴘʀᴏᴊᴇᴄᴛ ʙʀᴀɴᴄʜᴇꜱ](#ɪᴠ--ᴘʀᴏᴊᴇᴄᴛ-ʙʀᴀɴᴄʜᴇꜱ)
 | [ᴅᴇᴠ ꜰᴇᴀᴛᴜʀᴇꜱ](#ᴠ--ʙᴇʜɪɴᴅ-ᴛʜᴇ-ᴄᴏᴅᴇ-ᴅᴇᴠ-ꜰᴇᴀᴛᴜʀᴇꜱ)
-| [ᴘʀᴏᴊᴇᴄᴛ ɴᴏᴛᴇꜱ](#ᴠɪ--ᴘʀᴏᴊᴇᴄᴛ-ɴᴏᴛᴇꜱ)  
+| [ᴘʀᴏᴊᴇᴄᴛ ɴᴏᴛᴇꜱ](#ᴠɪ--ᴘʀᴏᴊᴇᴄᴛ-ɴᴏᴛᴇꜱ)
 
 <br>
+<br>
 
-⁃ ᴛᴇᴄʜɴᴏʟᴏɢɪᴇꜱ | ᴘʟᴀᴛꜰᴏʀᴍ ⁃
-<br>
-<br>
-  
 [![Platform](https://img.shields.io/badge/-Android%20|%20Platform-2E8B57?logo=android&logoColor=white&style=for-the-badge)](#)
 [![Language](https://img.shields.io/badge/-Kotlin%20|%20Language-%2307405e?logo=kotlin&logoColor=white&style=for-the-badge)](#)
 
@@ -35,34 +30,36 @@ and [Navigation](https://developer.android.com/topic/libraries/architecture/navi
 [![Architecture](https://img.shields.io/badge/-Architecture%20|%20MVI-1C1E24?logo=planetscale&logoColor=00C7B7&style=for-the-badge)](#)
 [![UI](https://img.shields.io/badge/-UI%20|%20Jetpack%20Compose-1C1E24?logo=planetscale&logoColor=00C7B7&style=for-the-badge)](#)
 
-</div>
+<br>
+<br>
+
+<img
+src="./screenshots/alpha_main.png"
+width="340" height="720"
+/>
 
 <br>
 
-<p align="center">
-<img 
-  src="./screenshots/alpha_main.png" 
-   width="340" height="720" 
-  />
-</p>
+</div>
+
 
 ## ɪɪ ⁃ ᴡʜᴀᴛ ᴜꜱᴇʀꜱ ᴄᴀɴ ᴇxᴘᴇᴄᴛ
 
 ### ⭓ Features
 
-  
-  1. **Features**
-       - Test
+
+1. **Features**
+    - Test
 
 ##
 ### ⭓ Requirements
-  - Android 7.0 and Above
-  - Min SDK version 24
+- Android 7.0 and Above
+- Min SDK version 24
 
 
 ##
 ### ⭓ Permissions
-  - Internet
+- Internet
 
 <hr>
 
@@ -93,8 +90,8 @@ and [Navigation](https://developer.android.com/topic/libraries/architecture/navi
 ![ForTheBadge GIT](https://forthebadge.com/images/badges/uses-git.svg)
 
   <br>
-  
-  <kbd>[&nbsp; ⮝ &nbsp;  BACK TO TOP  &nbsp;&nbsp;&nbsp;](#ɪ----ᴘʀᴏᴊᴇᴄᴛ-ɪɴꜰᴏ) </kbd>
+
+<kbd>[&nbsp; ⮝ &nbsp;  BACK TO TOP  &nbsp;&nbsp;&nbsp;](#ɪ----ᴘʀᴏᴊᴇᴄᴛ-ɪɴꜰᴏ) </kbd>
 </div>
 
 #
@@ -198,7 +195,7 @@ and [Navigation](https://developer.android.com/topic/libraries/architecture/navi
 * [Coroutines][1] : For Asynchronus or non-blocking operations.
 * [Flows][2] : Data Streaming API which is built on top of Coroutines.
 * [Jetpack Compose][3] : Toolkit for building native UI in a declarative way.
-* [Room][4] : Save data in a local database using Room   
+* [Room][4] : Save data in a local database using Room
 * [Retrofit][5] : Type-safe REST client for Android to consume RESTful web services.
 * [Dagger Hilt][6] : Dependency injection library for Android.
 * [Kotlin DSL][7] : For writing gradle script for Kotlin is more readable and offers better compile-time.
@@ -216,21 +213,23 @@ and [Navigation](https://developer.android.com/topic/libraries/architecture/navi
 #
 ### ⭓ Features
 
-  1. Room Persistence Database &nbsp;|&nbsp;  [ More-> ](#1-room-persistence-database)
-  
+1. Room Persistence Database &nbsp;|&nbsp;  [ More-> ](#1-room-persistence-database)
+
 
 <br>
+<br>  
+<br>  
 
 #
 <div align="center">
 
-  <kbd>[&nbsp; ⮝ &nbsp;  BACK TO TOP  &nbsp;&nbsp;&nbsp;](#ɪ----ᴘʀᴏᴊᴇᴄᴛ-ɪɴꜰᴏ) </kbd>
+<kbd>[&nbsp; ⮝ &nbsp;  BACK TO TOP  &nbsp;&nbsp;&nbsp;](#ɪ----ᴘʀᴏᴊᴇᴄᴛ-ɪɴꜰᴏ) </kbd>
 </div>
-<hr>
 
-
-
+#
 # ᴠɪ ⁃ ᴘʀᴏᴊᴇᴄᴛ ɴᴏᴛᴇꜱ
+
+<br> 
 
 ____
 
@@ -238,9 +237,12 @@ ____
 - Internet permission and Exception Handling
 - Sealed interface
 - Parse the JSON response with kotlinx.serialization
-  
+
+<br>  
+
 ____
 
+<br>  
 
 
 <br>
@@ -250,7 +252,7 @@ ____
 <hr>
 <div align="center">
 
-  <kbd>[&nbsp; ⮝ &nbsp;  BACK TO TOP  &nbsp;&nbsp;&nbsp;](#ɪ----ᴘʀᴏᴊᴇᴄᴛ-ɪɴꜰᴏ) </kbd>
+<kbd>[&nbsp; ⮝ &nbsp;  BACK TO TOP  &nbsp;&nbsp;&nbsp;](#ɪ----ᴘʀᴏᴊᴇᴄᴛ-ɪɴꜰᴏ) </kbd>
 </div>
 <hr>
 <br>
