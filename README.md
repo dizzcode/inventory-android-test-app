@@ -247,7 +247,7 @@ implementation("androidx.room:room-ktx:${rootProject.extra["room_version"]}")
 ```
 
 #
-#### Create an item Entity
+#### Create an item **Entity**
 - An Entity class defines a table, and each instance of this class represents a row in the database table.
 - The `@Entity` annotation marks a class as a database Entity class.  
 - For each Entity class, the app creates a database table to hold the items.  
@@ -263,7 +263,13 @@ class Item(
     // ...
 )
 ```
+[ View Code -> ](./app/src/main/java/dizzcode/com/inventoryapp/data/Item.kt)
 
+#
+#### Create the item **DAO**
+
+- The Data Access Object (DAO) is a pattern you can use to separate the persistence layer from the rest of the application by providing an abstract interface
+- 
 <br>  
 ____
 
