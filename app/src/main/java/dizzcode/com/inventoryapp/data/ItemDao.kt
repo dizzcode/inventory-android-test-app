@@ -54,6 +54,4 @@ interface ItemDao {
  * Flow in Room database can keep the data up-to-date by emitting a notification whenever
  * the data in the database changes. This allows you to observe the data and update your UI accordingly.
  *
- *
- *
  */

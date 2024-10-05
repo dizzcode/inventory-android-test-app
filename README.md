@@ -308,6 +308,57 @@ interface ItemDao {
 > `REPLACE` : OnConflict strategy constant to replace the old data and continue the transaction.  
 > `ABORT` : OnConflict strategy constant to abort the transaction.
 
+
+
+#
+### Create a **Database instance**
+
+- The `Database` class provides your app with instances of the DAOs you define.
+- You need to create an abstract RoomDatabase class and annotate it with `@Database`
+
+```kotlin
+@Database(
+    entities = [Item::class],
+    version = 1,
+    exportSchema = false
+)
+abstract class InventoryDatabase : RoomDatabase() {
+
+    abstract fun itemDao(): ItemDao
+
+    companion object {
+        @Volatile
+        private var Instance: InventoryDatabase? = null
+
+        fun getDatabase(context: Context): InventoryDatabase {
+            return Instance ?: synchronized(this) {
+                Room.databaseBuilder(
+                    context,
+                    InventoryDatabase::class.java,
+                    "item_database"
+                )
+                    .fallbackToDestructiveMigration()
+                    .build()
+                    .also { Instance = it }
+            }
+        }
+    }
+}
+```
+
+[ View Full Code --> ](./app/src/main/java/dizzcode/com/inventoryapp/data/InventoryDatabase.kt)
+
+<br>  
+
+> @Database ( entities = [Item::class], version = 1, exportSchema = false )
+
+- Specify the Item as the only class with the list of `entities`.
+- Set the version as `1`. Whenever you change the schema of the database table, you have to `increase the version number`.
+- Set `exportSchema` to `false` so as not to keep schema version history backups.
+
+<br> 
+
+[Understanding migrations with Room](https://medium.com/androiddevelopers/understanding-migrations-with-room-f01e04b07929)
 <br>  
 
 ____
