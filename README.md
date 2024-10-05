@@ -239,16 +239,32 @@ Main components of Room
 - Room `Database class` is the database class that provides your app with instances of the DAOs associated with that database.
 
 Dependencies
-```md
+```kotlin
 //Room
 implementation("androidx.room:room-runtime:${rootProject.extra["room_version"]}")
 ksp("androidx.room:room-compiler:${rootProject.extra["room_version"]}")
 implementation("androidx.room:room-ktx:${rootProject.extra["room_version"]}")
 ```
 
+#
+#### Create an item Entity
+- An Entity class defines a table, and each instance of this class represents a row in the database table.
+- The `@Entity` annotation marks a class as a database Entity class.  
+- For each Entity class, the app creates a database table to hold the items.  
+- Each `field` of the Entity is represented as a `column` in the database
+- Every entity instance stored in the database must have a `primary key`.
+- After the app assigns a primary key, `it cannot be modified`; it represents the entity object as long as it exists in the database.
+
+```kotlin
+@Entity(tableName = "items")
+class Item(
+    @PrimaryKey(autoGenerate = true)
+    val id: Int = 0,
+    // ...
+)
+```
 
 <br>  
-
 ____
 
 <br>  
