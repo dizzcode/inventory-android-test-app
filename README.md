@@ -1,5 +1,15 @@
 <h1 align="center" > Inventory - Android  - Test App </h1>
 
+[ɪ ⁃ ᴘʀᴏᴊᴇᴄᴛ ɪɴꜰᴏ](#ɪ----ᴘʀᴏᴊᴇᴄᴛ-ɪɴꜰᴏ)  
+[ɪɪ ⁃ ᴡʜᴀᴛ ᴜꜱᴇʀꜱ ᴄᴀɴ ᴇxᴘᴇᴄᴛ](#ɪɪ--ᴡʜᴀᴛ-ᴜꜱᴇʀꜱ-ᴄᴀɴ-ᴇxᴘᴇᴄᴛ)  
+[ɪɪɪ ⁃ ᴠɪꜱᴜᴀʟ ᴛᴏᴜʀ ᴏꜰ ᴛʜᴇ ᴀᴘᴘ: ꜱᴄʀᴇᴇɴꜱ](#ɪɪɪ--ᴠɪꜱᴜᴀʟ-ᴛᴏᴜʀ-ᴏꜰ-ᴛʜᴇ-ᴀᴘᴘ-ꜱᴄʀᴇᴇɴꜱ)  
+[ɪᴠ ⁃ ᴘʀᴏᴊᴇᴄᴛ ʙʀᴀɴᴄʜᴇꜱ](#ɪᴠ--ᴘʀᴏᴊᴇᴄᴛ-ʙʀᴀɴᴄʜᴇꜱ)  
+[ᴠ ⁃ ʙᴇʜɪɴᴅ ᴛʜᴇ ᴄᴏᴅᴇ: ᴅᴇᴠ ꜰᴇᴀᴛᴜʀᴇꜱ](#ᴠ--ʙᴇʜɪɴᴅ-ᴛʜᴇ-ᴄᴏᴅᴇ-ᴅᴇᴠ-ꜰᴇᴀᴛᴜʀᴇꜱ)  
+[ᴠɪ ⁃ ᴘʀᴏᴊᴇᴄᴛ ɴᴏᴛᴇꜱ](#ᴠɪ--ᴘʀᴏᴊᴇᴄᴛ-ɴᴏᴛᴇꜱ)  
+
+
+
+#
 ## ɪ  ⁃  ᴘʀᴏᴊᴇᴄᴛ ɪɴꜰᴏ
 
 This app is an Inventory tracking app. Demos how to add, update, sell, and delete items from the local database.
@@ -90,16 +100,99 @@ and [Navigation](https://developer.android.com/topic/libraries/architecture/navi
 > [!NOTE]
 > *Dev Zone: The following sections are crafted specifically for use in development.*
 
+____
+## ɪᴠ ⁃ ᴘʀᴏᴊᴇᴄᴛ ʙʀᴀɴᴄʜᴇꜱ
+
+<!-- Main / Master / Production Branch -->
+
+> <samp> **PRODUCTION BRANCH :**  </samp>  
+> Stable code for deployment  
+> ➲ [main][branch-main]
+
+> <samp> **STAGING BRANCH :**  </samp>  
+> `FLOW | Staging → Production`  
+> For pre-release testing, which ensures that the code is stable, bug-free, and ready for deployment.  
+> ➲ staging
+
+> <samp> **DEVELOPMENT BRANCH :**  </samp>  
+> `FLOW | Development → Release → Staging → Production`  
+> Active codebase for ongoing development efforts  (New features, bug fixes, and improvements..)  
+> ➲ [development][branch-development]
+
+
+
+> <samp> **FEATURE BRANCHES :** N/A  </samp>  
+> `FLOW | Feature → Development → Release → Staging → Production`  
+<!-- 
+> <samp> **FEATURE BRANCHES :**  </samp>  
+> For Isolated feature development (Ensures changes are tested and reviewed before merging into the main workflow)  
+>   
+> feature/  
+> ➲ dark-theme  
+> ➲ offline-db-impl
+-->
+
+
+> <samp> **RELEASE BRANCHES :** N/A  </samp>  
+> `FLOW | Release → Staging → Production`  
+<!-- 
+> <samp> **RELEASE BRANCHES :**  </samp>  
+> Prepares the code for final testing and deployment in a new version release.
+>   
+> release/  
+> ➲ version-number
+-->
+
+
+
+> <samp> **HOTFIX BRANCHES :** N/A  </samp>  
+> `FLOW | Hotfix → Staging → Production`  
+<!-- 
+> <samp> **HOTFIX BRANCHES :**  </samp>  
+> Handles critical fixes in production that need immediate resolution.
+>   
+> hotfix/  
+> ➲ main-screen-crash 
+-->
+
+
+> <samp> **BUGFIX BRANCHES :** N/A  </samp>  
+> `FLOW | Bugfix → Development → Release → Staging → Production` 
+<!-- 
+> <samp> **BUGFIX BRANCHES :**  </samp>  
+> Addresses specific bugs identified during development and testing.
+>   
+> bugfix/  
+> ➲ main-screen-error
+-->
+
+<!-- 
+> <samp> **EXPERIMENTAL BRANCHES :** N/A  </samp>  
+
+> <samp> **EXPERIMENTAL BRANCHES :**  </samp>  
+> Facilitates trial and error to test new ideas and concepts.
+>   
+> experiment/  
+> ➲ main-screen-change-colours
+-->
+<!-- Experimental → Feature → Development → Release → Staging → Main/Production   -->
+
+
+[branch-main]:  https://github.com/dizzcode/inventory-android-test-app/tree/main
+[branch-development]:  https://github.com/dizzcode/inventory-android-test-app/tree/development
+[branch-staging]:  https://github.com/dizzcode/inventory-android-test-app/tree/staging
+
+[branch-feature-NAME]:  https://github.com/dizzcode/inventory-android-test-app/tree/staging
+
+[branch-hotfix-NAME]:  https://github.com/dizzcode/inventory-android-test-app/tree/staging
+
+[branch-bugfix-NAME]:  https://github.com/dizzcode/inventory-android-test-app/tree/staging
+
+<br>  
+
 #
-## ɪᴠ ⁃ ʙᴇʜɪɴᴅ ᴛʜᴇ ᴄᴏᴅᴇ: ᴅᴇᴠ ꜰᴇᴀᴛᴜʀᴇꜱ
+## ᴠ ⁃ ʙᴇʜɪɴᴅ ᴛʜᴇ ᴄᴏᴅᴇ: ᴅᴇᴠ ꜰᴇᴀᴛᴜʀᴇꜱ
 
-### ⭓ Features
-
-  1. Test &nbsp;|&nbsp;  [ More-> ](#test)
-  
-
-
-#
 ### ⭓ App Dependencies/Libraries Overview
 
 <br>
@@ -108,7 +201,7 @@ and [Navigation](https://developer.android.com/topic/libraries/architecture/navi
 * [Coroutines][1] : For Asynchronus or non-blocking operations.
 * [Flows][2] : Data Streaming API which is built on top of Coroutines.
 * [Jetpack Compose][3] : Toolkit for building native UI in a declarative way.
-* [Splash Screen API][4] : Launch app with animation of launcher icon.
+* [Room][4] : Save data in a local database using Room   
 * [Retrofit][5] : Type-safe REST client for Android to consume RESTful web services.
 * [Dagger Hilt][6] : Dependency injection library for Android.
 * [Kotlin DSL][7] : For writing gradle script for Kotlin is more readable and offers better compile-time.
@@ -117,20 +210,19 @@ and [Navigation](https://developer.android.com/topic/libraries/architecture/navi
 [1]:  https://kotlinlang.org/docs/coroutines-overview.html
 [2]:  https://developer.android.com/kotlin/flow
 [3]:  https://developer.android.com/jetpack/compose
-[4]:  https://developer.android.com/develop/ui/views/launch/splash-screen
+[4]:  https://developer.android.com/training/data-storage/room
 [5]:  https://github.com/square/retrofit
 [6]:  https://dagger.dev/hilt/
 [7]:  https://docs.gradle.org/current/userguide/kotlin_dsl.html
 
+
+#
+### ⭓ Features
+
+  1. Room Persistence Database &nbsp;|&nbsp;  [ More-> ](#1-room-persistence-database)
+  
+
 <br>
-
-____
-## ᴠ ⁃ ᴘʀᴏᴊᴇᴄᴛ ʙʀᴀɴᴄʜᴇꜱ
-
-- [master](https://github.com/dizzcode/inventory-android-test-app/tree/master) - master branch will contain the production code.
-- [dev](https://github.com/dizzcode/inventory-android-test-app/tree/dev) - development branch will contain the on-going app feature developement and bug fixes
-
-<br>  
 
 #
 <div align="center">
@@ -145,7 +237,7 @@ ____
 
 ____
 
-## Test
+## 1. Room Persistence Database
 - Internet permission and Exception Handling
 - Sealed interface
 - Parse the JSON response with kotlinx.serialization
