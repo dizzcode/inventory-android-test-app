@@ -13,6 +13,7 @@ import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import dizzcode.com.inventoryapp.R.string
@@ -21,6 +22,7 @@ import dizzcode.com.inventoryapp.ui.navigation.InventoryNavHost
 /**
  * Top level composable that represents screens for the application.
  */
+@Preview(showSystemUi = true)
 @Composable
 fun InventoryApp(navController: NavHostController = rememberNavController()) {
     InventoryNavHost(navController = navController)
