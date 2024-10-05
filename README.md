@@ -1,4 +1,4 @@
-<h1 align="center" > Inventory - Android  - Test App </h1>
+<h1 align="center" >  Inventory App  <br> [ ᴀɴᴅʀᴏɪᴅ ♾ ᴅᴇᴍᴏ ᴘʀᴏᴊᴇᴄᴛ ]</h1>
 
 ## ɪ  ⁃  ᴘʀᴏᴊᴇᴄᴛ ɪɴꜰᴏ
 
