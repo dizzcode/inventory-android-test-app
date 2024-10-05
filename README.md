@@ -105,7 +105,7 @@ and [Navigation](https://developer.android.com/topic/libraries/architecture/navi
 > <samp> **STAGING BRANCH :**  </samp>  
 > `FLOW | Staging → Production`  
 > For pre-release testing, which ensures that the code is stable, bug-free, and ready for deployment.  
-> ➲ staging
+> ➲ [staging][branch-staging]
 
 > <samp> **DEVELOPMENT BRANCH :**  </samp>  
 > `FLOW | Development → Release → Staging → Production`  
@@ -247,7 +247,7 @@ implementation("androidx.room:room-ktx:${rootProject.extra["room_version"]}")
 ```
 
 #
-#### Create an item **Entity**
+### Create an item **Entity**
 - An Entity class defines a table, and each instance of this class represents a row in the database table.
 - The `@Entity` annotation marks a class as a database Entity class.  
 - For each Entity class, the app creates a database table to hold the items.  
@@ -266,7 +266,7 @@ class Item(
 [ View Full Code --> ](./app/src/main/java/dizzcode/com/inventoryapp/data/Item.kt)
 
 #
-#### Create the item **DAO**
+### Create the item **DAO**
 
 - The Data Access Object (DAO) is a pattern you can use to separate the persistence layer from the rest of the application by providing an abstract interface
 
@@ -298,13 +298,15 @@ interface ItemDao {
 
 [ View Full Code --> ](./app/src/main/java/dizzcode/com/inventoryapp/data/ItemDao.kt)
 
+<br>  
+
 > [!NOTE]  
 > @Insert(onConflict = OnConflictStrategy.IGNORE)
-> 
-> IGNORE : OnConflict strategy constant to ignore the conflict.
-> NONE : OnConflict strategy constant used by default when no other strategy is set.
-> REPLACE : OnConflict strategy constant to replace the old data and continue the transaction.
-> ABORT : OnConflict strategy constant to abort the transaction.
+>
+> `NONE` : OnConflict strategy constant used by [default] when no other strategy is set.  
+> `IGNORE` : OnConflict strategy constant to ignore the conflict.  
+> `REPLACE` : OnConflict strategy constant to replace the old data and continue the transaction.  
+> `ABORT` : OnConflict strategy constant to abort the transaction.
 
 <br>  
 
