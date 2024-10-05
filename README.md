@@ -32,10 +32,9 @@ and [Navigation](https://developer.android.com/topic/libraries/architecture/navi
 
 <br>
 <br>
-
 <img
-src="./screenshots/alpha_main.png"
-width="340" height="720"
+    src="./screenshots/alpha_main.png"
+    width="340" height="720" 
 />
 
 <br>
@@ -234,9 +233,19 @@ width="340" height="720"
 ____
 
 ## 1. Room Persistence Database
-- Internet permission and Exception Handling
-- Sealed interface
-- Parse the JSON response with kotlinx.serialization
+Main components of Room
+- `Room entities` represent tables in your app's database. You use them to update the data stored in rows in tables and to create new rows for insertion.
+- Room `DAOs` provide methods that your app uses to retrieve, update, insert, and delete data in the database.
+- Room `Database class` is the database class that provides your app with instances of the DAOs associated with that database.
+
+Dependencies
+```md
+//Room
+implementation("androidx.room:room-runtime:${rootProject.extra["room_version"]}")
+ksp("androidx.room:room-compiler:${rootProject.extra["room_version"]}")
+implementation("androidx.room:room-ktx:${rootProject.extra["room_version"]}")
+```
+
 
 <br>  
 
