@@ -7,7 +7,6 @@ import androidx.room.PrimaryKey
 /**
  * Entity data class represents a single row in the database.
  */
-
 @Entity(tableName = "items")
 class Item(
     @PrimaryKey(autoGenerate = true)
@@ -18,7 +17,11 @@ class Item(
 )
 
 /**
+ * ----------
+ * Note 01:
+ * ----------
  *  @PrimaryKey(autoGenerate = true)
+ *
  *  If autoGenerate is set to true, Room will automatically generate a unique value
  *  for the primary key column when a new entity instance is inserted into the database.
  */

@@ -263,14 +263,51 @@ class Item(
     // ...
 )
 ```
-[ View Code -> ](./app/src/main/java/dizzcode/com/inventoryapp/data/Item.kt)
+[ View Full Code --> ](./app/src/main/java/dizzcode/com/inventoryapp/data/Item.kt)
 
 #
 #### Create the item **DAO**
 
 - The Data Access Object (DAO) is a pattern you can use to separate the persistence layer from the rest of the application by providing an abstract interface
-- 
+
+- The DAO you create is a custom interface that provides convenience methods for `querying/retrieving [@Query]`, `inserting [@Insert]`, `deleting [@Delete]`, and `updating [@Update]` the database. 
+- Room generates an implementation of this class at `compile time`.
+
+```kotlin
+@Dao
+interface ItemDao {
+
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun insert(item: Item)
+
+    @Update
+    suspend fun update(item: Item)
+
+    @Delete
+    suspend fun delete(item: Item)
+
+    @Query("SELECT * from items WHERE id = :id")
+    fun getItem(id: Int): Flow<Item>
+
+    @Query("SELECT * from items " +
+            "ORDER BY name ASC")
+    fun getAllItems(): Flow<List<Item>>
+
+}
+```
+
+[ View Full Code --> ](./app/src/main/java/dizzcode/com/inventoryapp/data/ItemDao.kt)
+
+> [!NOTE]  
+> @Insert(onConflict = OnConflictStrategy.IGNORE)
+> 
+> IGNORE : OnConflict strategy constant to ignore the conflict.
+> NONE : OnConflict strategy constant used by default when no other strategy is set.
+> REPLACE : OnConflict strategy constant to replace the old data and continue the transaction.
+> ABORT : OnConflict strategy constant to abort the transaction.
+
 <br>  
+
 ____
 
 <br>  
