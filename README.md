@@ -92,7 +92,7 @@ and [Navigation](https://developer.android.com/topic/libraries/architecture/navi
   width="200" height="460" 
   />
 <img 
-  src="./screenshots/screen_no_items.png.png" 
+  src="./screenshots/screen_no_items.png" 
    width="200" height="460" 
   />
 </p>
@@ -241,7 +241,13 @@ and [Navigation](https://developer.android.com/topic/libraries/architecture/navi
     1.8 Add click listener to the Save button  
 
 
-2. Read, Display, Update data with Room  &nbsp;|&nbsp;  [ More-> ](#1-room-persistence-database-implementation)
+2. Read, Display, Update data with Room  &nbsp;|&nbsp;  [ More-> ](#2-read-display-update-data-with-room)  
+    2.1 Update UI state  
+    2.2 Emit UI state in the HomeViewModel  
+    2.3 Display the Inventory data  
+
+
+3. Test database &nbsp;|&nbsp;  [ More-> ](#3-test-database)
 
 <br>
 <br>  
@@ -653,11 +659,10 @@ data class HomeUiState(val itemList: List<Item> = listOf())
 
 ```
 
-#
-
 <br>
 
-> Emit UI state in the HomeViewModel
+#
+### 2.2 Emit UI state in the HomeViewModel
 
 ```kotlin
 class HomeViewModel(
@@ -705,7 +710,7 @@ object AppViewModelProvider {
 <br>
 
 #
-### 2.2 Display the Inventory data
+### 2.3 Display the Inventory data
 
 In this task, you collect and update the UI state in the HomeScreen.
 
@@ -753,10 +758,14 @@ fun HomeScreen(
 
 
 
+
+
+
+
+
 #
 
 <kbd>[&nbsp; ► &nbsp;  BACK TO Project Notes  &nbsp;&nbsp;&nbsp;](#ᴠɪ--ᴘʀᴏᴊᴇᴄᴛ-ɴᴏᴛᴇꜱ) </kbd>
-
 
 ____
 
