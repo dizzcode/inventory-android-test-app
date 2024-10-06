@@ -83,7 +83,7 @@ class ItemDaoTest {
         assertEquals(allItems[1], item2)
     }
 
-    // ---------- Edit Items
+    // ---------- Update Items
 
     @Test
     @Throws(Exception::class)
@@ -113,6 +113,17 @@ class ItemDaoTest {
         assertTrue(allItems.isEmpty())
     }
 
+    // ---------- Edit Items
+
+    @Test
+    @Throws(Exception::class)
+    fun daoGetItem_returnsItemFromDB() = runBlocking {
+        addOneItemToDb()
+
+        val item = itemDao.getItem(1)
+
+        assertEquals(item.first(), item1)
+    }
 
 }
 

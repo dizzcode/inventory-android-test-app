@@ -980,9 +980,112 @@ ____
 #
 ## 5 Edit/Update data with Room
 
+Steps to edit an entity in the app database:
+
+- Add a test to the test get item DAO query.
+- Populate the text fields and the Edit Item screen with the entity details.
+- Update the entity in the database using Room.
+
+#
+### 5.1 Edit Screens Navigation
+
+> Modified Code : ItemDetailsScreen
+```kotlin
+@Composable
+fun ItemDetailsScreen() {
+    // ...
+    Scaffold(
+        // ...
+         floatingActionButton = {
+             FloatingActionButton(
+                 onClick = { navigateToEditItem(uiState.value.itemDetails.id) }, // Added
+                 // ...
+             )
+             // ...
+         }
+    )
+}
+```
+
+#
+### 5.2 Edit Screen Functions
+
+> Modified Code : ItemEditViewModel
+```kotlin
+class ItemEditViewModel(
+    savedStateHandle: SavedStateHandle,
+    private val itemsRepository: ItemsRepository //Added
+) : ViewModel() {
+    // ...
+    // ----- Added
+    init {
+        viewModelScope.launch {
+            itemUiState = itemsRepository.getItemStream(itemId)
+                .filterNotNull()
+                .first()
+                .toItemUiState(true)
+        }
+    }
+    // ...
+    // ----- Added
+    fun updateUiState(itemDetails: ItemDetails) {
+        itemUiState =
+            ItemUiState(
+                itemDetails = itemDetails,
+                isEntryValid = validateInput(itemDetails)
+            )
+    }
+    // ----- Added
+    suspend fun updateItem() {
+        if (validateInput(itemUiState.itemDetails)) {
+            itemsRepository.updateItem(itemUiState.itemDetails.toItem())
+        }
+    }
+}
+```
+[ View Full Code --> ](./app/src/main/java/dizzcode/com/inventoryapp/ui/item/ItemEditViewModel.kt)
+
+> Modified Code : ItemEditScreen
+
+<br>
+
+```kotlin
+@Composable
+fun ItemEditScreen(
+    // ...  
+) {
+    // ----- Added
+    val coroutineScope = rememberCoroutineScope()
+    // ...
+    Scaffold(
+    // ...
+    )
+    ItemEntryBody(
+        // ...
+        onItemValueChange =  viewModel::updateUiState ,  // ----- Added
+        onSaveClick = {  // ----- Added
+            coroutineScope.launch {
+                viewModel.updateItem()
+                navigateBack()
+            }
+        }
+    )
+}
+```
+[ View Full Code --> ](./app/src/main/java/dizzcode/com/inventoryapp/ui/item/ItemEditScreen.kt)
 
 
 <br>
+
+> Modified Code : AppViewModelProvider
+```kotlin
+initializer {
+    ItemEditViewModel(
+        this.createSavedStateHandle(),
+        inventoryApplication().container.itemsRepository //Added
+    )
+}
+```
 
 #
 
@@ -1085,10 +1188,10 @@ class ItemDaoTest {
 
 
 #
-### 6.2 Test Edit Items
+### 6.2 Test Update/Sell Items
 
 ```kotlin
-    @Test
+@Test
 @Throws(Exception::class)
 fun daoUpdateItems_updatesItemsInDB() = runBlocking {
         addTwoItemsToDb()
@@ -1110,7 +1213,7 @@ fun daoUpdateItems_updatesItemsInDB() = runBlocking {
 
 
 ```kotlin
-    @Test
+@Test
 @Throws(Exception::class)
 fun daoDeleteItems_deletesAllItemsFromDB() = runBlocking {
         addTwoItemsToDb()
@@ -1127,6 +1230,23 @@ fun daoDeleteItems_deletesAllItemsFromDB() = runBlocking {
 
 <br>
 
+#
+### 6.2 Test Edit Items
+
+```kotlin
+@Test
+@Throws(Exception::class)
+fun daoGetItem_returnsItemFromDB() = runBlocking {
+        addOneItemToDb()
+
+        val item = itemDao.getItem(1)
+
+        assertEquals(item.first(), item1)
+    }
+```
+[ View Full Code --> ](./app/src/androidTest/kotlin/ItemDaoTest.kt)
+
+<br>
 
 #
 
