@@ -33,7 +33,7 @@ and [Navigation](https://developer.android.com/topic/libraries/architecture/navi
 <br>
 <br>
 <img
-    src="./screenshots/screen_item_add.png"
+    src="./screenshots/alpha_main.png"
     width="340" height="720" 
 />
 
@@ -88,14 +88,19 @@ and [Navigation](https://developer.android.com/topic/libraries/architecture/navi
    width="200" height="460" 
   />
 <img 
-  src="./screenshots/screen_item_add.png" 
+  src="./screenshots/screen_item_details.png" 
   width="200" height="460" 
   />
 <img 
-  src="./screenshots/alpha_main.png" 
+  src="./screenshots/screen_no_items.png" 
+   width="200" height="460" 
+  />
+<img 
+  src="./screenshots/screen_edit_item.png" 
    width="200" height="460" 
   />
 </p>
+
 
 
 #
@@ -230,15 +235,43 @@ and [Navigation](https://developer.android.com/topic/libraries/architecture/navi
 #
 ### ⭓ Features
 
-1. Room Persistence Database &nbsp;|&nbsp;  [ More-> ](#1-room-persistence-database)  
-    1.1 How to add Room library to the app  
-    1.2 Create an item Entity  
-    1.3 Create the item DAO  
-    1.4 Create a Database instance  
-    1.5 Implement the Repository  
-    1.6 Implement AppContainer class  
-    1.7 Add the save functionality  
-    1.8 Add click listener to the Save button  
+1. Room Persistence Database Implementation &nbsp;|&nbsp;  [ More-> ](#1-room-persistence-database-implementation)  
+    1.1 | How to add Room library to the app  
+    1.2 | Create an item Entity  
+    1.3 | Create the item DAO  
+    1.4 | Create a Database instance  
+    1.5 | Implement the Repository  
+    1.6 | Implement AppContainer class  
+    1.7 | Add the save functionality  
+    1.8 | Add click listener to the Save button  
+
+
+2. Read and Display data with Room  &nbsp;|&nbsp;  [ More-> ](#2-read-and-display-data-with-room)  
+    2.1 | Update UI state  
+    2.2 | Emit UI state in the HomeViewModel  
+    2.3 | Display the Inventory data  
+    2.4 | Display item details  
+
+   
+3. Implement sell item &nbsp;|&nbsp;  [ More-> ](#3-implement-sell-item)  
+    3.1 | Add a function in the ViewModel  
+
+
+4. Delete item entity &nbsp;|&nbsp;  [ More-> ](#4-delete-item-entity)  
+   4.1 | Add delete function in the ItemDetailsViewModel  
+
+
+5. Edit/Update data with Room &nbsp;|&nbsp;  [ More-> ](#5-editupdate-data-with-room)  
+   5.1 | Edit Screen Navigation  
+   5.2 | Edit Screen Functions  
+
+
+6. Test database  &nbsp;|&nbsp;  [ More-> ](#6-test-database)
+   6.1 | Test Add Items  
+   6.2 | Test Update/Sell Items  
+   6.3 | Test Delete Items  
+   6.4 | Test Edit Items  
+
 
 <br>
 <br>  
@@ -257,7 +290,7 @@ and [Navigation](https://developer.android.com/topic/libraries/architecture/navi
 
 ____
 
-## 1. Room Persistence Database
+## 1. Room Persistence Database Implementation
 Main components of Room
 - `Room entities` represent tables in your app's database. You use them to update the data stored in rows in tables and to create new rows for insertion.
 - Room `DAOs` provide methods that your app uses to retrieve, update, insert, and delete data in the database.
@@ -269,7 +302,7 @@ Main components of Room
 ### 1.1 How to add Room library to the app
 <br>
 
-Add below dependencies
+Add below dependencies | inside `build.gradle.kts` (Module :app)
 ```kotlin
 //Room
 implementation("androidx.room:room-runtime:${rootProject.extra["room_version"]}")
@@ -423,7 +456,8 @@ interface ItemsRepository {
 
 [ View Full Code --> ](./app/src/main/java/dizzcode/com/inventoryapp/data/ItemsRepository.kt)
 
-<br>
+<br>  
+<br>  
 
 > `Offline`Items`Repository`
 
@@ -495,6 +529,7 @@ class ItemEntryViewModel(
 ```
 [ View Full Code --> ](./app/src/main/java/dizzcode/com/inventoryapp/ui/item/ItemEntryViewModel.kt)
 
+<br> 
 <br>
 
 - Update the initializer for the item entry view model in the `AppViewModelProvider.kt` and pass in the repository instance as a parameter.
@@ -594,8 +629,664 @@ ____
 
 <br>  
 
+#
+## 2. Read and Display data with Room
 
 <br>
+
+In this task, you add a `LazyColumn` to the app to display the data stored in the database.
+
+To pass the inventory list to this composable, you must retrieve the inventory data from the repository and pass it into the HomeViewModel
+
+#
+### 2.1 Update UI state
+
+- When you added methods to ItemDao to get items- getItem() and getAllItems()- you specified a Flow as the return type.
+
+
+- By returning a Flow in getItem() and getAllItems(), you allow Room to handle data updates asynchronously. This way, the DAO methods are called once, and any changes to the data are automatically observed without needing additional calls during the lifecycle.
+
+
+- Getting data from a flow is called collecting from a flow. When collecting from a flow in your UI layer, there are a few things to consider.
+
+  - Recompositions: Events like device rotation recreate the activity, causing the Flow to be collected again.
+  - Caching: Cache values as state to retain data across lifecycle events.
+  - Cancellation: Cancel the Flow when there are no observers, such as when a composable's lifecycle ends.
+
+<br> 
+
+> [!IMPORTANT]  
+> The recommended way to expose a `Flow` from a `ViewModel` is with a `StateFlow`
+> 
+> Using a StateFlow allows the data to be saved and observed, regardless of the UI lifecycle.  
+> To convert a Flow to a StateFlow, you use the stateIn operator.
+
+<br> 
+
+- The stateIn operator has three parameters which are explained below:
+
+  - `scope` - The viewModelScope defines the lifecycle of the StateFlow. When the viewModelScope is canceled, the StateFlow is also canceled.
+  - `started` - The pipeline should only be active when the UI is visible. The SharingStarted.WhileSubscribed() is used to accomplish this. To configure a delay (in milliseconds) between the disappearance of the last subscriber and the stopping of the sharing coroutine, pass in the TIMEOUT_MILLIS to the SharingStarted.WhileSubscribed() method.
+  - `initialValue` - Set the initial value of the state flow to HomeUiState().
+
+
+- Once you've converted your Flow into a `StateFlow`, you can collect it using the `collectAsState()` method, converting its data into State of the same type.
+
+*In this step, you'll retrieve all items in the Room database as a StateFlow observable API for UI state. When the Room Inventory data changes, the UI updates automatically.*
+
+> Initial code
+
+```kotlin
+class HomeViewModel : ViewModel() {
+    companion object {
+        private const val TIMEOUT_MILLIS = 5_000L
+    }
+}
+
+data class HomeUiState(val itemList: List<Item> = listOf())
+
+```
+
+<br>
+
+#
+### 2.2 Emit UI state in the HomeViewModel
+
+```kotlin
+class HomeViewModel(
+    itemsRepository: ItemsRepository //Added
+) : ViewModel() {
+
+    // ------ Added
+    val homeUiState: StateFlow<HomeUiState> =
+        itemsRepository.getAllItemsStream().map { item ->
+            HomeUiState(item)
+        }.stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(TIMEOUT_MILLIS),
+            initialValue = HomeUiState()
+        )
+    // ------ Added
+
+    companion object {
+        private const val TIMEOUT_MILLIS = 5_000L
+    }
+}
+
+
+data class HomeUiState(val itemList: List<Item> = listOf())
+```
+[ View Full Code --> ](./app/src/main/java/dizzcode/com/inventoryapp/ui/home/HomeViewModel.kt)
+
+<br>
+
+```kotlin
+object AppViewModelProvider {
+    val Factory = viewModelFactory {
+        // Other Initializers 
+        initializer {
+            HomeViewModel(
+                inventoryApplication().container.itemsRepository
+            )
+        }
+        //...
+    }
+}
+```
+[ View Full Code --> ](./app/src/main/java/dizzcode/com/inventoryapp/ui/AppViewModelProvider.kt)
+
+<br>
+
+#
+### 2.3 Display the Inventory data
+
+In this task, you collect and update the UI state in the HomeScreen.
+
+
+> Initial code
+
+```kotlin
+@Composable
+fun HomeScreen(
+    navigateToItemEntry: () -> Unit,
+    navigateToItemUpdate: (Int) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    // ...
+}
+```
+
+<br>
+
+> Modified Code
+
+```kotlin
+@Composable
+fun HomeScreen(
+    navigateToItemEntry: () -> Unit,
+    navigateToItemUpdate: (Int) -> Unit,
+    modifier: Modifier = Modifier,
+    viewModel: HomeViewModel = viewModel(factory = AppViewModelProvider.Factory) // Added
+){
+    // ..
+    val homeUiState by viewModel.homeUiState.collectAsState()
+    // ...
+
+    HomeBody(
+        itemList = homeUiState.itemList, //Added
+        onItemClick = navigateToItemUpdate,
+        modifier = modifier.padding(innerPadding)
+    )
+}
+```
+[ View Full Code --> ](./app/src/main/java/dizzcode/com/inventoryapp/ui/home/HomeScreen.kt)
+
+<br>
+
+#
+### 2.4 Display item details
+
+In this task, you read and display the entity details on the Item Details screen.
+
+> Initial code
+
+```kotlin
+@Composable
+fun ItemDetailsScreen(
+    navigateToEditItem: (Int) -> Unit,
+    navigateBack: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    // ...
+}
+```
+
+<br>
+
+> Modified Code : ItemDetailsScreen
+
+```kotlin
+@Composable
+fun ItemDetailsScreen(
+    navigateToEditItem: (Int) -> Unit,
+    navigateBack: () -> Unit,
+    viewModel: ItemDetailsViewModel = viewModel(factory = AppViewModelProvider.Factory), //Added
+    modifier: Modifier = Modifier
+) {
+    val uiState = viewModel.uiState.collectAsState() //Added
+    
+    // ...
+    ItemDetailsBody(
+        itemDetailsUiState = uiState.value, //Added
+        onSellItem = { },
+        onDelete = { },
+        // ...
+    )
+}
+```
+[ View Full Code --> ](./app/src/main/java/dizzcode/com/inventoryapp/ui/item/ItemDetailsScreen.kt)
+
+<br>
+
+> Modified Code : ItemDetailsViewModel
+```kotlin
+class ItemDetailsViewModel(
+    savedStateHandle: SavedStateHandle,
+    private val itemsRepository: ItemsRepository //Added
+) : ViewModel() {
+
+    // ---- Added
+    val uiState: StateFlow<ItemDetailsUiState> =
+        itemsRepository.getItemStream(itemId)
+            .filterNotNull()
+            .map { item ->
+                ItemDetailsUiState(itemDetails = item.toItemDetails())
+            }.stateIn(
+                scope = viewModelScope,
+                started = SharingStarted.WhileSubscribed(TIMEOUT_MILLIS),
+                initialValue = ItemDetailsUiState()
+            )
+    // ---- Added
+}
+```
+
+<br>
+
+> Modified Code : AppViewModelProvider
+```kotlin
+initializer {
+    ItemDetailsViewModel(
+        this.createSavedStateHandle(),
+        inventoryApplication().container.itemsRepository //Added
+    )
+}
+```
+
+<br>
+
+#
+
+<kbd>[&nbsp; ► &nbsp;  BACK TO Project Notes  &nbsp;&nbsp;&nbsp;](#ᴠɪ--ᴘʀᴏᴊᴇᴄᴛ-ɴᴏᴛᴇꜱ) </kbd>
+
+____
+
+<br>  
+
+
+#
+## 3. Implement sell item
+
+This update involves the following tasks:
+
+- Add a test for the DAO function to update an entity.
+- Add a function in the ItemDetailsViewModel to reduce the quantity and update the entity in the app database.
+- Disable the Sell button if the quantity is zero.
+
+#
+### 3.1 Add a function in the ViewModel
+
+> [!IMPORTANT]  
+> viewModelScope.launch{}
+> 
+> You must run database operations inside a coroutine.
+
+<br> 
+
+```kotlin
+class ItemDetailsViewModel(
+    savedStateHandle: SavedStateHandle,
+    private val itemsRepository: ItemsRepository
+) : ViewModel() {
+    // ...
+    val uiState: StateFlow<ItemDetailsUiState> =
+        itemsRepository.getItemStream(itemId)
+            .filterNotNull()
+            .map { item ->
+                ItemDetailsUiState(
+                    outOfStock = item.quantity <= 0, // Added
+                    itemDetails = item.toItemDetails()
+                )
+            }
+    // ...
+    
+    // ----- Added
+    fun reduceQuantityByOne() {
+        viewModelScope.launch {
+
+            val currentItem = uiState.value.itemDetails.toItem()
+
+            if (currentItem.quantity > 0) {
+                itemsRepository.updateItem(
+                    currentItem.copy(quantity = currentItem.quantity - 1)
+                )
+            }
+        }
+    }
+    // ----- Added
+}
+```
+[ View Full Code --> ](./app/src/main/java/dizzcode/com/inventoryapp/ui/item/ItemDetailsViewModel.kt)
+
+```kotlin
+@Composable
+fun ItemDetailsScreen() {
+    // ...
+    ItemDetailsBody(
+        itemUiState = uiState.value,
+        onSellItem = { viewModel.reduceQuantityByOne() }, //Added
+        onDelete = { },
+        // ...
+    )
+}
+```
+
+<br>
+
+#
+
+<kbd>[&nbsp; ► &nbsp;  BACK TO Project Notes  &nbsp;&nbsp;&nbsp;](#ᴠɪ--ᴘʀᴏᴊᴇᴄᴛ-ɴᴏᴛᴇꜱ) </kbd>
+
+____
+
+<br>  
+
+#
+## 4. Delete item entity
+
+The process involves the following tasks:
+
+- Add a test for the delete DAO query.
+- Add a function in the ItemDetailsViewModel class to delete an entity from the database.
+- Update the ItemDetailsBody composable.
+
+#
+### 4.1 Add delete function in the ItemDetailsViewModel
+
+
+```kotlin
+class ItemDetailsViewModel(
+    savedStateHandle: SavedStateHandle,
+    private val itemsRepository: ItemsRepository
+) : ViewModel() {
+    // ...
+    
+    // ----- Added
+    suspend fun deleteItem() {
+        itemsRepository.deleteItem(uiState.value.itemDetails.toItem())
+    }
+    // ----- Added
+}
+```
+[ View Full Code --> ](./app/src/main/java/dizzcode/com/inventoryapp/ui/item/ItemDetailsViewModel.kt)
+
+```kotlin
+@Composable
+fun ItemDetailsScreen() {
+    // ...
+    ItemDetailsBody(
+        itemUiState = uiState.value,
+        onSellItem = { viewModel.reduceQuantityByOne() }, //Added
+        onDelete = { // --------- Added
+            coroutineScope.launch {
+                viewModel.deleteItem()
+                navigateBack()
+            }
+        } // --------- Added
+        // ...
+    )
+}
+```
+
+<br>
+
+#
+
+<kbd>[&nbsp; ► &nbsp;  BACK TO Project Notes  &nbsp;&nbsp;&nbsp;](#ᴠɪ--ᴘʀᴏᴊᴇᴄᴛ-ɴᴏᴛᴇꜱ) </kbd>
+
+____
+
+<br>  
+
+#
+## 5. Edit/Update data with Room
+
+Steps to edit an entity in the app database:
+
+- Add a test to the test get item DAO query.
+- Populate the text fields and the Edit Item screen with the entity details.
+- Update the entity in the database using Room.
+
+#
+### 5.1 Edit Screens Navigation
+
+<br> 
+
+> Modified Code : ItemDetailsScreen
+```kotlin
+@Composable
+fun ItemDetailsScreen() {
+    // ...
+    Scaffold(
+        // ...
+         floatingActionButton = {
+             FloatingActionButton(
+                 onClick = { navigateToEditItem(uiState.value.itemDetails.id) }, // Added
+                 // ...
+             )
+             // ...
+         }
+    )
+}
+```
+
+#
+### 5.2 Edit Screen Functions
+
+<br> 
+
+> Modified Code : ItemEditViewModel
+```kotlin
+class ItemEditViewModel(
+    savedStateHandle: SavedStateHandle,
+    private val itemsRepository: ItemsRepository //Added
+) : ViewModel() {
+    // ...
+    // ----- Added
+    init {
+        viewModelScope.launch {
+            itemUiState = itemsRepository.getItemStream(itemId)
+                .filterNotNull()
+                .first()
+                .toItemUiState(true)
+        }
+    }
+    // ...
+    // ----- Added
+    fun updateUiState(itemDetails: ItemDetails) {
+        itemUiState =
+            ItemUiState(
+                itemDetails = itemDetails,
+                isEntryValid = validateInput(itemDetails)
+            )
+    }
+    // ----- Added
+    suspend fun updateItem() {
+        if (validateInput(itemUiState.itemDetails)) {
+            itemsRepository.updateItem(itemUiState.itemDetails.toItem())
+        }
+    }
+}
+```
+[ View Full Code --> ](./app/src/main/java/dizzcode/com/inventoryapp/ui/item/ItemEditViewModel.kt)
+
+<br> 
+
+> Modified Code : ItemEditScreen
+
+```kotlin
+@Composable
+fun ItemEditScreen(
+    // ...  
+) {
+    // ----- Added
+    val coroutineScope = rememberCoroutineScope()
+    // ...
+    Scaffold(
+    // ...
+    )
+    ItemEntryBody(
+        // ...
+        onItemValueChange =  viewModel::updateUiState ,  // ----- Added
+        onSaveClick = {  // ----- Added
+            coroutineScope.launch {
+                viewModel.updateItem()
+                navigateBack()
+            }
+        }
+    )
+}
+```
+[ View Full Code --> ](./app/src/main/java/dizzcode/com/inventoryapp/ui/item/ItemEditScreen.kt)
+
+<br>
+
+> Modified Code : AppViewModelProvider
+```kotlin
+initializer {
+    ItemEditViewModel(
+        this.createSavedStateHandle(),
+        inventoryApplication().container.itemsRepository //Added
+    )
+}
+```
+
+#
+
+<kbd>[&nbsp; ► &nbsp;  BACK TO Project Notes  &nbsp;&nbsp;&nbsp;](#ᴠɪ--ᴘʀᴏᴊᴇᴄᴛ-ɴᴏᴛᴇꜱ) </kbd>
+
+____
+
+<br>  
+
+#
+## 6. Test database
+
+In this task, you add some unit tests to test your DAO queries, and then you add more tests as you progress through the codelab.
+
+<br>
+
+Add below dependencies | inside `build.gradle.kts` (Module :app)
+
+```kotlin
+// Testing
+androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
+androidTestImplementation("androidx.test.ext:junit:1.1.5")
+```
+<br>
+
+#
+### 6.1 Test Add Items
+
+ **Directory : androidTest/kotlin**
+
+> Full Code
+```kotlin
+@RunWith(AndroidJUnit4::class)
+class ItemDaoTest {
+
+    private lateinit var itemDao: ItemDao
+    private lateinit var inventoryDatabase: InventoryDatabase
+
+    private var item1 = Item(1, "Apples", 10.0, 20)
+    private var item2 = Item(2, "Bananas", 15.0, 97)
+
+    @Before
+    fun createDb() {
+        val context: Context = ApplicationProvider.getApplicationContext()
+        // Using an in-memory database because the information stored here disappears when the
+        // process is killed.
+        inventoryDatabase = Room.inMemoryDatabaseBuilder(context, InventoryDatabase::class.java)
+            // Allowing main thread queries, just for testing.
+            .allowMainThreadQueries()
+            .build()
+        itemDao = inventoryDatabase.itemDao()
+    }
+
+    @After
+    @Throws(IOException::class)
+    fun closeDb() {
+        inventoryDatabase.close()
+    }
+
+    // ----------
+
+    private suspend fun addOneItemToDb() {
+        itemDao.insert(item1)
+    }
+
+    @Test
+    @Throws(Exception::class)
+    fun daoInsert_insertsItemIntoDB() = runBlocking {
+        addOneItemToDb()
+
+        val allItems = itemDao.getAllItems().first()
+
+        assertEquals(allItems[0], item1)
+    }
+
+    // ----------
+
+    private suspend fun addTwoItemsToDb() {
+        itemDao.insert(item1)
+        itemDao.insert(item2)
+    }
+
+    @Test
+    @Throws(Exception::class)
+    fun daoGetAllItems_returnsAllItemsFromDB() = runBlocking {
+        addTwoItemsToDb()
+
+        val allItems = itemDao.getAllItems().first()
+        assertEquals(allItems[0], item1)
+        assertEquals(allItems[1], item2)
+    }
+}
+```
+[ View Full Code --> ](./app/src/androidTest/kotlin/ItemDaoTest.kt)
+
+- `@Before` so that it can run before every test.
+- `@After` to close the database and run after every test.
+- add `suspend` so they can run in a coroutine.
+- You run the test in a new coroutine with `runBlocking{}`. This setup is the reason you mark the utility functions as suspend
+
+
+#
+### 6.2 Test Update/Sell Items
+
+```kotlin
+@Test
+@Throws(Exception::class)
+fun daoUpdateItems_updatesItemsInDB() = runBlocking {
+        addTwoItemsToDb()
+
+        itemDao.update(Item(1, "Apples", 15.0, 25))
+        itemDao.update(Item(2, "Bananas", 5.0, 50))
+
+        val allItems = itemDao.getAllItems().first()
+        assertEquals(allItems[0], Item(1, "Apples", 15.0, 25))
+        assertEquals(allItems[1], Item(2, "Bananas", 5.0, 50))
+}
+```
+[ View Full Code --> ](./app/src/androidTest/kotlin/ItemDaoTest.kt)
+
+<br>
+
+#
+### 6.3 Test Delete Items
+
+
+```kotlin
+@Test
+@Throws(Exception::class)
+fun daoDeleteItems_deletesAllItemsFromDB() = runBlocking {
+        addTwoItemsToDb()
+
+        itemDao.delete(item1)
+        itemDao.delete(item2)
+
+        val allItems = itemDao.getAllItems().first()
+        assertTrue(allItems.isEmpty())
+}
+
+```
+[ View Full Code --> ](./app/src/androidTest/kotlin/ItemDaoTest.kt)
+
+<br>
+
+#
+### 6.4 Test Edit Items
+
+```kotlin
+@Test
+@Throws(Exception::class)
+fun daoGetItem_returnsItemFromDB() = runBlocking {
+        addOneItemToDb()
+
+        val item = itemDao.getItem(1)
+
+        assertEquals(item.first(), item1)
+    }
+```
+[ View Full Code --> ](./app/src/androidTest/kotlin/ItemDaoTest.kt)
+
+<br>
+
+#
+
+<kbd>[&nbsp; ► &nbsp;  BACK TO Project Notes  &nbsp;&nbsp;&nbsp;](#ᴠɪ--ᴘʀᴏᴊᴇᴄᴛ-ɴᴏᴛᴇꜱ) </kbd>
+
+____
+
 
 <br>
 
