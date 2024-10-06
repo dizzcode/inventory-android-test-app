@@ -47,8 +47,26 @@ and [Navigation](https://developer.android.com/topic/libraries/architecture/navi
 ### ⭓ Features
 
 
-1. **Features**
-    - Test
+1. Add Items
+   - Users can add new inventory items to the local database.
+   - The form may include fields like item name, quantity, price, description, etc.
+
+
+2. Update Items
+   - Users can update existing inventory details, such as modifying the quantity, name, or price of the item.
+   
+
+3. Delete Items
+   - Users can delete items from the inventory entirely.
+
+
+4. View Items List
+   - Users can view all available items in a list, showing details like name, quantity, and price.
+
+
+5. User-Friendly Interface
+   - Simple and intuitive UI that allows users to interact with the inventory easily.
+
 
 ##
 ### ⭓ Requirements
@@ -58,7 +76,7 @@ and [Navigation](https://developer.android.com/topic/libraries/architecture/navi
 
 ##
 ### ⭓ Permissions
-- Internet
+- N/A
 
 <hr>
 
