@@ -33,7 +33,7 @@ and [Navigation](https://developer.android.com/topic/libraries/architecture/navi
 <br>
 <br>
 <img
-    src="./screenshots/screen_item_add.png"
+    src="./screenshots/alpha_main.png"
     width="340" height="720" 
 />
 
@@ -92,7 +92,7 @@ and [Navigation](https://developer.android.com/topic/libraries/architecture/navi
   width="200" height="460" 
   />
 <img 
-  src="./screenshots/alpha_main.png" 
+  src="./screenshots/screen_no_items.png.png" 
    width="200" height="460" 
   />
 </p>
@@ -230,7 +230,7 @@ and [Navigation](https://developer.android.com/topic/libraries/architecture/navi
 #
 ### ⭓ Features
 
-1. Room Persistence Database &nbsp;|&nbsp;  [ More-> ](#1-room-persistence-database)  
+1. Room Persistence Database Implementation &nbsp;|&nbsp;  [ More-> ](#1-room-persistence-database-implementation)  
     1.1 How to add Room library to the app  
     1.2 Create an item Entity  
     1.3 Create the item DAO  
@@ -239,6 +239,9 @@ and [Navigation](https://developer.android.com/topic/libraries/architecture/navi
     1.6 Implement AppContainer class  
     1.7 Add the save functionality  
     1.8 Add click listener to the Save button  
+
+
+2. Read, Display, Update data with Room  &nbsp;|&nbsp;  [ More-> ](#1-room-persistence-database-implementation)
 
 <br>
 <br>  
@@ -257,7 +260,7 @@ and [Navigation](https://developer.android.com/topic/libraries/architecture/navi
 
 ____
 
-## 1. Room Persistence Database
+## 1. Room Persistence Database Implementation
 Main components of Room
 - `Room entities` represent tables in your app's database. You use them to update the data stored in rows in tables and to create new rows for insertion.
 - Room `DAOs` provide methods that your app uses to retrieve, update, insert, and delete data in the database.
@@ -269,7 +272,7 @@ Main components of Room
 ### 1.1 How to add Room library to the app
 <br>
 
-Add below dependencies
+Add below dependencies | inside `build.gradle.kts` (Module :app)
 ```kotlin
 //Room
 implementation("androidx.room:room-runtime:${rootProject.extra["room_version"]}")
@@ -594,8 +597,267 @@ ____
 
 <br>  
 
+#
+## 2. Read, Display, Update data with Room
 
 <br>
+
+In this task, you add a `LazyColumn` to the app to display the data stored in the database.
+
+To pass the inventory list to this composable, you must retrieve the inventory data from the repository and pass it into the HomeViewModel
+
+#
+### 2.1 Update UI state
+
+- When you added methods to ItemDao to get items- getItem() and getAllItems()- you specified a Flow as the return type.
+
+
+- By returning a Flow in getItem() and getAllItems(), you allow Room to handle data updates asynchronously. This way, the DAO methods are called once, and any changes to the data are automatically observed without needing additional calls during the lifecycle.
+
+
+- Getting data from a flow is called collecting from a flow. When collecting from a flow in your UI layer, there are a few things to consider.
+
+  - Recompositions: Events like device rotation recreate the activity, causing the Flow to be collected again.
+  - Caching: Cache values as state to retain data across lifecycle events.
+  - Cancellation: Cancel the Flow when there are no observers, such as when a composable's lifecycle ends.
+
+
+> [!IMPORTANT]  
+> The recommended way to expose a `Flow` from a `ViewModel` is with a `StateFlow`
+> 
+> Using a StateFlow allows the data to be saved and observed, regardless of the UI lifecycle.  
+> To convert a Flow to a StateFlow, you use the stateIn operator.
+
+
+- The stateIn operator has three parameters which are explained below:
+
+  - `scope` - The viewModelScope defines the lifecycle of the StateFlow. When the viewModelScope is canceled, the StateFlow is also canceled.
+  - `started` - The pipeline should only be active when the UI is visible. The SharingStarted.WhileSubscribed() is used to accomplish this. To configure a delay (in milliseconds) between the disappearance of the last subscriber and the stopping of the sharing coroutine, pass in the TIMEOUT_MILLIS to the SharingStarted.WhileSubscribed() method.
+  - `initialValue` - Set the initial value of the state flow to HomeUiState().
+
+
+- Once you've converted your Flow into a `StateFlow`, you can collect it using the `collectAsState()` method, converting its data into State of the same type.
+
+*In this step, you'll retrieve all items in the Room database as a StateFlow observable API for UI state. When the Room Inventory data changes, the UI updates automatically.*
+
+> Initial code
+
+```kotlin
+class HomeViewModel : ViewModel() {
+    companion object {
+        private const val TIMEOUT_MILLIS = 5_000L
+    }
+}
+
+data class HomeUiState(val itemList: List<Item> = listOf())
+
+```
+
+#
+
+<br>
+
+> Emit UI state in the HomeViewModel
+
+```kotlin
+class HomeViewModel(
+    itemsRepository: ItemsRepository //Added
+) : ViewModel() {
+
+    // ------ Added
+    val homeUiState: StateFlow<HomeUiState> =
+        itemsRepository.getAllItemsStream().map { item ->
+            HomeUiState(item)
+        }.stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(TIMEOUT_MILLIS),
+            initialValue = HomeUiState()
+        )
+    // ------ Added
+
+    companion object {
+        private const val TIMEOUT_MILLIS = 5_000L
+    }
+}
+
+
+data class HomeUiState(val itemList: List<Item> = listOf())
+```
+[ View Full Code --> ](./app/src/main/java/dizzcode/com/inventoryapp/ui/home/HomeViewModel.kt)
+
+<br>
+
+```kotlin
+object AppViewModelProvider {
+    val Factory = viewModelFactory {
+        // Other Initializers 
+        initializer {
+            HomeViewModel(
+                inventoryApplication().container.itemsRepository
+            )
+        }
+        //...
+    }
+}
+```
+[ View Full Code --> ](./app/src/main/java/dizzcode/com/inventoryapp/ui/AppViewModelProvider.kt)
+
+<br>
+
+#
+### 2.2 Display the Inventory data
+
+In this task, you collect and update the UI state in the HomeScreen.
+
+
+> Initial code
+
+```kotlin
+@Composable
+fun HomeScreen(
+    navigateToItemEntry: () -> Unit,
+    navigateToItemUpdate: (Int) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    // ...
+}
+```
+
+#
+
+<br>
+
+> Modified Code
+
+```kotlin
+@Composable
+fun HomeScreen(
+    navigateToItemEntry: () -> Unit,
+    navigateToItemUpdate: (Int) -> Unit,
+    modifier: Modifier = Modifier,
+    viewModel: HomeViewModel = viewModel(factory = AppViewModelProvider.Factory) // Added
+){
+    // ..
+    val homeUiState by viewModel.homeUiState.collectAsState()
+    // ...
+
+    HomeBody(
+        itemList = homeUiState.itemList, //Added
+        onItemClick = navigateToItemUpdate,
+        modifier = modifier.padding(innerPadding)
+    )
+}
+```
+[ View Full Code --> ](./app/src/main/java/dizzcode/com/inventoryapp/ui/home/HomeScreen.kt)
+
+
+
+
+#
+
+<kbd>[&nbsp; ► &nbsp;  BACK TO Project Notes  &nbsp;&nbsp;&nbsp;](#ᴠɪ--ᴘʀᴏᴊᴇᴄᴛ-ɴᴏᴛᴇꜱ) </kbd>
+
+
+____
+
+<br>  
+
+#
+## 3. Test database
+
+In this task, you add some unit tests to test your DAO queries, and then you add more tests as you progress through the codelab.
+
+<br>
+
+Add below dependencies | inside `build.gradle.kts` (Module :app)
+
+```kotlin
+// Testing
+androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
+androidTestImplementation("androidx.test.ext:junit:1.1.5")
+```
+<br>
+
+ **Directory : androidTest/kotlin**
+
+> Full Code
+```kotlin
+@RunWith(AndroidJUnit4::class)
+class ItemDaoTest {
+
+    private lateinit var itemDao: ItemDao
+    private lateinit var inventoryDatabase: InventoryDatabase
+
+    private var item1 = Item(1, "Apples", 10.0, 20)
+    private var item2 = Item(2, "Bananas", 15.0, 97)
+
+    @Before
+    fun createDb() {
+        val context: Context = ApplicationProvider.getApplicationContext()
+        // Using an in-memory database because the information stored here disappears when the
+        // process is killed.
+        inventoryDatabase = Room.inMemoryDatabaseBuilder(context, InventoryDatabase::class.java)
+            // Allowing main thread queries, just for testing.
+            .allowMainThreadQueries()
+            .build()
+        itemDao = inventoryDatabase.itemDao()
+    }
+
+    @After
+    @Throws(IOException::class)
+    fun closeDb() {
+        inventoryDatabase.close()
+    }
+
+    // ----------
+
+    private suspend fun addOneItemToDb() {
+        itemDao.insert(item1)
+    }
+
+    @Test
+    @Throws(Exception::class)
+    fun daoInsert_insertsItemIntoDB() = runBlocking {
+        addOneItemToDb()
+
+        val allItems = itemDao.getAllItems().first()
+
+        assertEquals(allItems[0], item1)
+    }
+
+    // ----------
+
+    private suspend fun addTwoItemsToDb() {
+        itemDao.insert(item1)
+        itemDao.insert(item2)
+    }
+
+    @Test
+    @Throws(Exception::class)
+    fun daoGetAllItems_returnsAllItemsFromDB() = runBlocking {
+        addTwoItemsToDb()
+
+        val allItems = itemDao.getAllItems().first()
+        assertEquals(allItems[0], item1)
+        assertEquals(allItems[1], item2)
+    }
+}
+```
+[ View Full Code --> ](./app/src/androidTest/kotlin/ItemDaoTest.kt)
+
+- `@Before` so that it can run before every test.
+- `@After` to close the database and run after every test.
+- add `suspend` so they can run in a coroutine.
+- You run the test in a new coroutine with `runBlocking{}`. This setup is the reason you mark the utility functions as suspend
+
+
+
+#
+
+<kbd>[&nbsp; ► &nbsp;  BACK TO Project Notes  &nbsp;&nbsp;&nbsp;](#ᴠɪ--ᴘʀᴏᴊᴇᴄᴛ-ɴᴏᴛᴇꜱ) </kbd>
+
+____
+
 
 <br>
 
