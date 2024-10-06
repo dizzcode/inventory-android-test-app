@@ -88,14 +88,19 @@ and [Navigation](https://developer.android.com/topic/libraries/architecture/navi
    width="200" height="460" 
   />
 <img 
-  src="./screenshots/screen_item_add.png" 
+  src="./screenshots/screen_item_details.png" 
   width="200" height="460" 
   />
 <img 
   src="./screenshots/screen_no_items.png" 
    width="200" height="460" 
   />
+<img 
+  src="./screenshots/screen_edit_item.png" 
+   width="200" height="460" 
+  />
 </p>
+
 
 
 #
@@ -231,23 +236,42 @@ and [Navigation](https://developer.android.com/topic/libraries/architecture/navi
 ### ⭓ Features
 
 1. Room Persistence Database Implementation &nbsp;|&nbsp;  [ More-> ](#1-room-persistence-database-implementation)  
-    1.1 How to add Room library to the app  
-    1.2 Create an item Entity  
-    1.3 Create the item DAO  
-    1.4 Create a Database instance  
-    1.5 Implement the Repository  
-    1.6 Implement AppContainer class  
-    1.7 Add the save functionality  
-    1.8 Add click listener to the Save button  
+    1.1 | How to add Room library to the app  
+    1.2 | Create an item Entity  
+    1.3 | Create the item DAO  
+    1.4 | Create a Database instance  
+    1.5 | Implement the Repository  
+    1.6 | Implement AppContainer class  
+    1.7 | Add the save functionality  
+    1.8 | Add click listener to the Save button  
 
 
-2. Read, Display, Update data with Room  &nbsp;|&nbsp;  [ More-> ](#2-read-display-update-data-with-room)  
-    2.1 Update UI state  
-    2.2 Emit UI state in the HomeViewModel  
-    2.3 Display the Inventory data  
+2. Read and Display data with Room  &nbsp;|&nbsp;  [ More-> ](#2-read-and-display-data-with-room)  
+    2.1 | Update UI state  
+    2.2 | Emit UI state in the HomeViewModel  
+    2.3 | Display the Inventory data  
+    2.4 | Display item details  
+
+   
+3. Implement sell item &nbsp;|&nbsp;  [ More-> ](#3-implement-sell-item)  
+    3.1 | Add a function in the ViewModel  
 
 
-3. Test database &nbsp;|&nbsp;  [ More-> ](#3-test-database)
+4. Delete item entity &nbsp;|&nbsp;  [ More-> ](#4-delete-item-entity)  
+   4.1 | Add delete function in the ItemDetailsViewModel  
+
+
+5. Edit/Update data with Room &nbsp;|&nbsp;  [ More-> ](#5-editupdate-data-with-room)  
+   5.1 | Edit Screen Navigation  
+   5.2 | Edit Screen Functions  
+
+
+6. Test database  &nbsp;|&nbsp;  [ More-> ](#6-test-database)
+   6.1 | Test Add Items  
+   6.2 | Test Update/Sell Items  
+   6.3 | Test Delete Items  
+   6.4 | Test Edit Items  
+
 
 <br>
 <br>  
@@ -432,7 +456,8 @@ interface ItemsRepository {
 
 [ View Full Code --> ](./app/src/main/java/dizzcode/com/inventoryapp/data/ItemsRepository.kt)
 
-<br>
+<br>  
+<br>  
 
 > `Offline`Items`Repository`
 
@@ -504,6 +529,7 @@ class ItemEntryViewModel(
 ```
 [ View Full Code --> ](./app/src/main/java/dizzcode/com/inventoryapp/ui/item/ItemEntryViewModel.kt)
 
+<br> 
 <br>
 
 - Update the initializer for the item entry view model in the `AppViewModelProvider.kt` and pass in the repository instance as a parameter.
@@ -627,6 +653,7 @@ To pass the inventory list to this composable, you must retrieve the inventory d
   - Caching: Cache values as state to retain data across lifecycle events.
   - Cancellation: Cancel the Flow when there are no observers, such as when a composable's lifecycle ends.
 
+<br> 
 
 > [!IMPORTANT]  
 > The recommended way to expose a `Flow` from a `ViewModel` is with a `StateFlow`
@@ -634,6 +661,7 @@ To pass the inventory list to this composable, you must retrieve the inventory d
 > Using a StateFlow allows the data to be saved and observed, regardless of the UI lifecycle.  
 > To convert a Flow to a StateFlow, you use the stateIn operator.
 
+<br> 
 
 - The stateIn operator has three parameters which are explained below:
 
@@ -846,7 +874,7 @@ ____
 
 
 #
-## 3 Implement sell item
+## 3. Implement sell item
 
 This update involves the following tasks:
 
@@ -861,6 +889,8 @@ This update involves the following tasks:
 > viewModelScope.launch{}
 > 
 > You must run database operations inside a coroutine.
+
+<br> 
 
 ```kotlin
 class ItemDetailsViewModel(
@@ -921,7 +951,7 @@ ____
 <br>  
 
 #
-## 4 Delete item entity
+## 4. Delete item entity
 
 The process involves the following tasks:
 
@@ -978,7 +1008,7 @@ ____
 <br>  
 
 #
-## 5 Edit/Update data with Room
+## 5. Edit/Update data with Room
 
 Steps to edit an entity in the app database:
 
@@ -988,6 +1018,8 @@ Steps to edit an entity in the app database:
 
 #
 ### 5.1 Edit Screens Navigation
+
+<br> 
 
 > Modified Code : ItemDetailsScreen
 ```kotlin
@@ -1009,6 +1041,8 @@ fun ItemDetailsScreen() {
 
 #
 ### 5.2 Edit Screen Functions
+
+<br> 
 
 > Modified Code : ItemEditViewModel
 ```kotlin
@@ -1045,9 +1079,9 @@ class ItemEditViewModel(
 ```
 [ View Full Code --> ](./app/src/main/java/dizzcode/com/inventoryapp/ui/item/ItemEditViewModel.kt)
 
-> Modified Code : ItemEditScreen
+<br> 
 
-<br>
+> Modified Code : ItemEditScreen
 
 ```kotlin
 @Composable
@@ -1073,7 +1107,6 @@ fun ItemEditScreen(
 }
 ```
 [ View Full Code --> ](./app/src/main/java/dizzcode/com/inventoryapp/ui/item/ItemEditScreen.kt)
-
 
 <br>
 
@@ -1209,7 +1242,7 @@ fun daoUpdateItems_updatesItemsInDB() = runBlocking {
 <br>
 
 #
-### 6.2 Test Delete Items
+### 6.3 Test Delete Items
 
 
 ```kotlin
@@ -1231,7 +1264,7 @@ fun daoDeleteItems_deletesAllItemsFromDB() = runBlocking {
 <br>
 
 #
-### 6.2 Test Edit Items
+### 6.4 Test Edit Items
 
 ```kotlin
 @Test
