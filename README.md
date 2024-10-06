@@ -33,7 +33,7 @@ and [Navigation](https://developer.android.com/topic/libraries/architecture/navi
 <br>
 <br>
 <img
-    src="./screenshots/alpha_main.png"
+    src="./screenshots/screen_item_add.png"
     width="340" height="720" 
 />
 
@@ -70,7 +70,7 @@ and [Navigation](https://developer.android.com/topic/libraries/architecture/navi
    width="200" height="460" 
   />
 <img 
-  src="./screenshots/alpha_main.png" 
+  src="./screenshots/screen_item_add.png" 
   width="200" height="460" 
   />
 <img 
@@ -212,8 +212,15 @@ and [Navigation](https://developer.android.com/topic/libraries/architecture/navi
 #
 ### ⭓ Features
 
-1. Room Persistence Database &nbsp;|&nbsp;  [ More-> ](#1-room-persistence-database)
-
+1. Room Persistence Database &nbsp;|&nbsp;  [ More-> ](#1-room-persistence-database)  
+    1.1 How to add Room library to the app  
+    1.2 Create an item Entity  
+    1.3 Create the item DAO  
+    1.4 Create a Database instance  
+    1.5 Implement the Repository  
+    1.6 Implement AppContainer class  
+    1.7 Add the save functionality  
+    1.8 Add click listener to the Save button  
 
 <br>
 <br>  
@@ -238,6 +245,9 @@ Main components of Room
 - Room `DAOs` provide methods that your app uses to retrieve, update, insert, and delete data in the database.
 - Room `Database class` is the database class that provides your app with instances of the DAOs associated with that database.
 
+<br>  
+
+#
 ### 1.1 How to add Room library to the app
 <br>
 
@@ -248,6 +258,8 @@ implementation("androidx.room:room-runtime:${rootProject.extra["room_version"]}"
 ksp("androidx.room:room-compiler:${rootProject.extra["room_version"]}")
 implementation("androidx.room:room-ktx:${rootProject.extra["room_version"]}")
 ```
+
+<br>  
 
 #
 ### 1.2 Create an item **Entity**
@@ -267,6 +279,8 @@ class Item(
 )
 ```
 [ View Full Code --> ](./app/src/main/java/dizzcode/com/inventoryapp/data/Item.kt)
+
+<br>  
 
 #
 ### 1.3 Create the item **DAO**
@@ -311,7 +325,7 @@ interface ItemDao {
 > `REPLACE` : OnConflict strategy constant to replace the old data and continue the transaction.  
 > `ABORT` : OnConflict strategy constant to abort the transaction.
 
-
+<br>  
 
 #
 ### 1.4 Create a **Database instance**
@@ -362,9 +376,10 @@ abstract class InventoryDatabase : RoomDatabase() {
 <br> 
 
 [Understanding migrations with Room](https://medium.com/androiddevelopers/understanding-migrations-with-room-f01e04b07929)
+
 <br>  
 
-
+<br>  
 
 #
 ### 1.5 Implement the Repository
@@ -413,6 +428,7 @@ class OfflineItemsRepository(
 
 [ View Full Code --> ](./app/src/main/java/dizzcode/com/inventoryapp/data/OfflineItemsRepository.kt)
 
+<br>  
 
 #
 ### 1.6 Implement AppContainer class
@@ -496,6 +512,7 @@ suspend fun saveItem() {
 ```
 [ View Full Code --> ](./app/src/main/java/dizzcode/com/inventoryapp/ui/item/ItemEntryViewModel.kt)
 
+<br>  
 
 #
 ### 1.8 Add click listener to the Save button
@@ -534,7 +551,7 @@ ItemEntryBody(
 ```
 [ View Full Code --> ](./app/src/main/java/dizzcode/com/inventoryapp/ui/item/ItemEntryScreen.kt)
 
-<br>  
+<br>
 
 #### View the database content using Database Inspector
 
@@ -550,6 +567,11 @@ ItemEntryBody(
         width="720" height="200"
     />
 </p>
+
+#
+
+<kbd>[&nbsp; ► &nbsp;  BACK TO Project Notes  &nbsp;&nbsp;&nbsp;](#ᴠɪ--ᴘʀᴏᴊᴇᴄᴛ-ɴᴏᴛᴇꜱ) </kbd>
+
 ____
 
 <br>  
