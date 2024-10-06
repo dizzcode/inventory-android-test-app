@@ -26,6 +26,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -36,9 +37,11 @@ import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.lifecycle.viewmodel.compose.viewModel
 import dizzcode.com.inventoryapp.InventoryTopAppBar
 import dizzcode.com.inventoryapp.R
 import dizzcode.com.inventoryapp.data.Item
+import dizzcode.com.inventoryapp.ui.AppViewModelProvider
 import dizzcode.com.inventoryapp.ui.navigation.NavigationDestination
 import dizzcode.com.inventoryapp.ui.theme.InventoryTheme
 
@@ -54,8 +57,11 @@ object ItemDetailsDestination : NavigationDestination {
 fun ItemDetailsScreen(
     navigateToEditItem: (Int) -> Unit,
     navigateBack: () -> Unit,
+    viewModel: ItemDetailsViewModel = viewModel(factory = AppViewModelProvider.Factory),
     modifier: Modifier = Modifier
 ) {
+    val uiState = viewModel.uiState.collectAsState()
+
     Scaffold(
         topBar = {
             InventoryTopAppBar(
@@ -78,8 +84,8 @@ fun ItemDetailsScreen(
         }, modifier = modifier
     ) { innerPadding ->
         ItemDetailsBody(
-            itemDetailsUiState = ItemDetailsUiState(),
-            onSellItem = { },
+            itemDetailsUiState = uiState.value,
+            onSellItem = { viewModel.reduceQuantityByOne() },
             onDelete = { },
             modifier = Modifier
                 .padding(

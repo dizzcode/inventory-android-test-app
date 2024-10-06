@@ -604,7 +604,7 @@ ____
 <br>  
 
 #
-## 2. Read, Display, Update data with Room
+## 2. Read and Display data with Room
 
 <br>
 
@@ -728,8 +728,6 @@ fun HomeScreen(
 }
 ```
 
-#
-
 <br>
 
 > Modified Code
@@ -755,13 +753,164 @@ fun HomeScreen(
 ```
 [ View Full Code --> ](./app/src/main/java/dizzcode/com/inventoryapp/ui/home/HomeScreen.kt)
 
+<br>
+
+#
+### 2.4 Display item details
+
+In this task, you read and display the entity details on the Item Details screen.
+
+> Initial code
+
+```kotlin
+@Composable
+fun ItemDetailsScreen(
+    navigateToEditItem: (Int) -> Unit,
+    navigateBack: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    // ...
+}
+```
+
+<br>
+
+> Modified Code : ItemDetailsScreen
+
+```kotlin
+@Composable
+fun ItemDetailsScreen(
+    navigateToEditItem: (Int) -> Unit,
+    navigateBack: () -> Unit,
+    viewModel: ItemDetailsViewModel = viewModel(factory = AppViewModelProvider.Factory), //Added
+    modifier: Modifier = Modifier
+) {
+    val uiState = viewModel.uiState.collectAsState() //Added
+    
+    // ...
+    ItemDetailsBody(
+        itemDetailsUiState = uiState.value, //Added
+        onSellItem = { },
+        onDelete = { },
+        // ...
+    )
+}
+```
+[ View Full Code --> ](./app/src/main/java/dizzcode/com/inventoryapp/ui/item/ItemDetailsScreen.kt)
+
+<br>
+
+> Modified Code : ItemDetailsViewModel
+```kotlin
+class ItemDetailsViewModel(
+    savedStateHandle: SavedStateHandle,
+    private val itemsRepository: ItemsRepository //Added
+) : ViewModel() {
+
+    // ---- Added
+    val uiState: StateFlow<ItemDetailsUiState> =
+        itemsRepository.getItemStream(itemId)
+            .filterNotNull()
+            .map { item ->
+                ItemDetailsUiState(itemDetails = item.toItemDetails())
+            }.stateIn(
+                scope = viewModelScope,
+                started = SharingStarted.WhileSubscribed(TIMEOUT_MILLIS),
+                initialValue = ItemDetailsUiState()
+            )
+    // ---- Added
+}
+```
+
+<br>
+
+> Modified Code : AppViewModelProvider
+```kotlin
+initializer {
+    ItemDetailsViewModel(
+        this.createSavedStateHandle(),
+        inventoryApplication().container.itemsRepository //Added
+    )
+}
+```
+
+<br>
+
+#
+
+<kbd>[&nbsp; ► &nbsp;  BACK TO Project Notes  &nbsp;&nbsp;&nbsp;](#ᴠɪ--ᴘʀᴏᴊᴇᴄᴛ-ɴᴏᴛᴇꜱ) </kbd>
+
+____
+
+<br>  
 
 
+#
+## 3 Implement sell item
 
+This update involves the following tasks:
 
+- Add a test for the DAO function to update an entity.
+- Add a function in the ItemDetailsViewModel to reduce the quantity and update the entity in the app database.
+- Disable the Sell button if the quantity is zero.
 
+#
+### 3.1 Add a function in the ViewModel
 
+> [!IMPORTANT]  
+> viewModelScope.launch{}
+> 
+> You must run database operations inside a coroutine.
 
+```kotlin
+class ItemDetailsViewModel(
+    savedStateHandle: SavedStateHandle,
+    private val itemsRepository: ItemsRepository
+) : ViewModel() {
+    // ...
+    val uiState: StateFlow<ItemDetailsUiState> =
+        itemsRepository.getItemStream(itemId)
+            .filterNotNull()
+            .map { item ->
+                ItemDetailsUiState(
+                    outOfStock = item.quantity <= 0, // Added
+                    itemDetails = item.toItemDetails()
+                )
+            }
+    // ...
+    
+    // ----- Added
+    fun reduceQuantityByOne() {
+        viewModelScope.launch {
+
+            val currentItem = uiState.value.itemDetails.toItem()
+
+            if (currentItem.quantity > 0) {
+                itemsRepository.updateItem(
+                    currentItem.copy(quantity = currentItem.quantity - 1)
+                )
+            }
+        }
+    }
+    // ----- Added
+}
+```
+[ View Full Code --> ](./app/src/main/java/dizzcode/com/inventoryapp/ui/item/ItemDetailsViewModel.kt)
+
+```kotlin
+@Composable
+fun ItemDetailsScreen() {
+    // ...
+    ItemDetailsBody(
+        itemUiState = uiState.value,
+        onSellItem = { viewModel.reduceQuantityByOne() }, //Added
+        onDelete = { },
+        // ...
+    )
+}
+```
+
+<br>
 
 #
 
@@ -772,7 +921,37 @@ ____
 <br>  
 
 #
-## 3. Test database
+## 4 Delete item entity
+
+
+
+<br>
+
+#
+
+<kbd>[&nbsp; ► &nbsp;  BACK TO Project Notes  &nbsp;&nbsp;&nbsp;](#ᴠɪ--ᴘʀᴏᴊᴇᴄᴛ-ɴᴏᴛᴇꜱ) </kbd>
+
+____
+
+<br>  
+
+#
+## 5 Edit/Update data with Room
+
+
+
+<br>
+
+#
+
+<kbd>[&nbsp; ► &nbsp;  BACK TO Project Notes  &nbsp;&nbsp;&nbsp;](#ᴠɪ--ᴘʀᴏᴊᴇᴄᴛ-ɴᴏᴛᴇꜱ) </kbd>
+
+____
+
+<br>  
+
+#
+## 6. Test database
 
 In this task, you add some unit tests to test your DAO queries, and then you add more tests as you progress through the codelab.
 
@@ -786,6 +965,9 @@ androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
 androidTestImplementation("androidx.test.ext:junit:1.1.5")
 ```
 <br>
+
+#
+### 6.1 Test Add Items
 
  **Directory : androidTest/kotlin**
 
@@ -860,6 +1042,29 @@ class ItemDaoTest {
 - You run the test in a new coroutine with `runBlocking{}`. This setup is the reason you mark the utility functions as suspend
 
 
+#
+### 6.2 Test Edit Items
+
+```kotlin
+    @Test
+@Throws(Exception::class)
+fun daoUpdateItems_updatesItemsInDB() = runBlocking {
+        addTwoItemsToDb()
+
+        itemDao.update(Item(1, "Apples", 15.0, 25))
+        itemDao.update(Item(2, "Bananas", 5.0, 50))
+
+        val allItems = itemDao.getAllItems().first()
+        assertEquals(allItems[0], Item(1, "Apples", 15.0, 25))
+        assertEquals(allItems[1], Item(2, "Bananas", 5.0, 50))
+}
+```
+[ View Full Code --> ](./app/src/androidTest/kotlin/ItemDaoTest.kt)
+
+<br>
+
+#
+### 6.2 Test Delete Items
 
 #
 
