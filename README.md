@@ -923,7 +923,49 @@ ____
 #
 ## 4 Delete item entity
 
+The process involves the following tasks:
 
+- Add a test for the delete DAO query.
+- Add a function in the ItemDetailsViewModel class to delete an entity from the database.
+- Update the ItemDetailsBody composable.
+
+#
+### 4.1 Add delete function in the ItemDetailsViewModel
+
+
+```kotlin
+class ItemDetailsViewModel(
+    savedStateHandle: SavedStateHandle,
+    private val itemsRepository: ItemsRepository
+) : ViewModel() {
+    // ...
+    
+    // ----- Added
+    suspend fun deleteItem() {
+        itemsRepository.deleteItem(uiState.value.itemDetails.toItem())
+    }
+    // ----- Added
+}
+```
+[ View Full Code --> ](./app/src/main/java/dizzcode/com/inventoryapp/ui/item/ItemDetailsViewModel.kt)
+
+```kotlin
+@Composable
+fun ItemDetailsScreen() {
+    // ...
+    ItemDetailsBody(
+        itemUiState = uiState.value,
+        onSellItem = { viewModel.reduceQuantityByOne() }, //Added
+        onDelete = { // --------- Added
+            coroutineScope.launch {
+                viewModel.deleteItem()
+                navigateBack()
+            }
+        } // --------- Added
+        // ...
+    )
+}
+```
 
 <br>
 
@@ -1065,6 +1107,26 @@ fun daoUpdateItems_updatesItemsInDB() = runBlocking {
 
 #
 ### 6.2 Test Delete Items
+
+
+```kotlin
+    @Test
+@Throws(Exception::class)
+fun daoDeleteItems_deletesAllItemsFromDB() = runBlocking {
+        addTwoItemsToDb()
+
+        itemDao.delete(item1)
+        itemDao.delete(item2)
+
+        val allItems = itemDao.getAllItems().first()
+        assertTrue(allItems.isEmpty())
+}
+
+```
+[ View Full Code --> ](./app/src/androidTest/kotlin/ItemDaoTest.kt)
+
+<br>
+
 
 #
 

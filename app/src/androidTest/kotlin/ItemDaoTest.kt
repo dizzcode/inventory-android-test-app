@@ -99,5 +99,20 @@ class ItemDaoTest {
     }
 
 
+    // ---------- Delete Items
+
+    @Test
+    @Throws(Exception::class)
+    fun daoDeleteItems_deletesAllItemsFromDB() = runBlocking {
+        addTwoItemsToDb()
+
+        itemDao.delete(item1)
+        itemDao.delete(item2)
+
+        val allItems = itemDao.getAllItems().first()
+        assertTrue(allItems.isEmpty())
+    }
+
+
 }
 
